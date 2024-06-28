@@ -31,32 +31,18 @@ async fn main() {
     let access_token = env::var("ACCESS_TOKEN").unwrap();
     let csrf_token = env::var("CSRF_TOKEN").unwrap();
     let notary_host = env::var("NOTARY_HOST").unwrap();
-    let notary_port = env::var("NOTARY_PORT").unwrap();
-    let notary_tls = env::var("NOTARY_TLS").unwrap();
-
 
 
     // Build a client to connect to the notary server.
 
-      if notary_tls.as_str().eq_ignore_ascii_case("false") {
     let notary_client = NotaryClient::builder()
         .host(notary_host)
-        .port(notary_port)
-        // WARNING: Always use TLS to connect to notary server, except if notary is running locally
-        // e.g. this example, hence `enable_tls` is set to False (else it always defaults to True).
-        .enable_tls(false)
-        .build()
-        .unwrap();
-      } else { 
-              let notary_client = NotaryClient::builder()
-        .host(notary_host)
-        .port(notary_port)
+        .port(7047)
         // WARNING: Always use TLS to connect to notary server, except if notary is running locally
         // e.g. this example, hence `enable_tls` is set to False (else it always defaults to True).
         .enable_tls(true)
         .build()
         .unwrap();
-      }
 
     // Send requests for configuration and notarization to the notary server.
     let notarization_request = NotarizationRequest::builder().build().unwrap();
