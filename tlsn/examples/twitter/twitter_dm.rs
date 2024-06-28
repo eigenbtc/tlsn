@@ -18,9 +18,7 @@ const SERVER_DOMAIN: &str = "twitter.com";
 const ROUTE: &str = "i/api/1.1/dm/conversation";
 const USER_AGENT: &str = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36";
 
-// Setting of the notary server — make sure these are the same with the config in ../../../notary/server
-const NOTARY_HOST: &str = "127.0.0.1";
-const NOTARY_PORT: u16 = 7047;
+
 
 #[tokio::main]
 async fn main() {
@@ -32,16 +30,33 @@ async fn main() {
     let auth_token = env::var("AUTH_TOKEN").unwrap();
     let access_token = env::var("ACCESS_TOKEN").unwrap();
     let csrf_token = env::var("CSRF_TOKEN").unwrap();
+    let notary_host = env::var("NOTARY_HOST").unwrap();
+    let notary_port = env::var("NOTARY_PORT").unwrap();
+    let notary_tls = env::var("NOTARY_TLS").unwrap();
+
+
 
     // Build a client to connect to the notary server.
+
+      if notary_tls.as_str().eq_ignore_ascii_case("false") {
     let notary_client = NotaryClient::builder()
-        .host(NOTARY_HOST)
-        .port(NOTARY_PORT)
+        .host(notary_host)
+        .port(notary_port)
         // WARNING: Always use TLS to connect to notary server, except if notary is running locally
         // e.g. this example, hence `enable_tls` is set to False (else it always defaults to True).
         .enable_tls(false)
         .build()
         .unwrap();
+      } else { 
+              let notary_client = NotaryClient::builder()
+        .host(notary_host)
+        .port(notary_port)
+        // WARNING: Always use TLS to connect to notary server, except if notary is running locally
+        // e.g. this example, hence `enable_tls` is set to False (else it always defaults to True).
+        .enable_tls(true)
+        .build()
+        .unwrap();
+      }
 
     // Send requests for configuration and notarization to the notary server.
     let notarization_request = NotarizationRequest::builder().build().unwrap();
